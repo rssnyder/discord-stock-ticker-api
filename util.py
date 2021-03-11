@@ -4,6 +4,7 @@ from sqlite3 import connect
 
 import docker
 from requests import get, post
+from discord_webhook import DiscordWebhook, DiscordEmbed
 
 
 COINGECKO_URL = 'https://api.coingecko.com/api/v3/'
@@ -34,6 +35,26 @@ def log(message: str) -> None:
 
     if response.status_code != 200:
         logging.error(f'Telegram Error: {response.text}')
+
+
+def notify_discord(ticker: str, client_id: str) -> int:
+    '''
+    Post new bot to discord server
+    '''
+
+    discord_msg = DiscordWebhook(
+        url=getenv('DISCORD_WEBHOOK')
+    )
+
+    discord_msg.add_embed(
+        DiscordEmbed(
+            title=f'New Discord Ticker: {ticker.upper()}',
+            description=f'https://discord.com/api/oauth2/authorize?client_id={client_id}&permissions=0&scope=bot',
+            color='3333ff'
+        )
+    )
+
+    discord_msg.execute().status_code
 
 
 def create_bot(type: str, ticker: str, name: str, token: str) -> docker.Container:
