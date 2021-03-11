@@ -57,7 +57,7 @@ def notify_discord(ticker: str, client_id: str) -> int:
     discord_msg.execute().status_code
 
 
-def create_bot(type: str, ticker: str, name: str, token: str) -> docker.Container:
+def create_bot(type: str, ticker: str, name: str, token: str):
     '''
     Create a new bot instance
     Returns a container instance of the bot
