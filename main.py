@@ -2,7 +2,6 @@ import logging
 from os import getenv
 
 import docker
-from typing import Optional
 from fastapi import FastAPI
 from requests import post
 
@@ -18,7 +17,7 @@ def read_root():
 
 
 @app.get('/crypto/{id}')
-def crypto(id: str, q: Optional[str] = None):
+def crypto(id: str):
 
     # Validate crypto id with cg
     crypto_details = crypto_validate(id)
@@ -59,7 +58,7 @@ def crypto(id: str, q: Optional[str] = None):
 
 
 @app.get('/stock/{id}')
-def stock(id: str, q: Optional[str] = None):
+def stock(id: str):
 
     # Validate stock id with yahoo
     stock_details = stock_validate(id)

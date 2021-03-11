@@ -36,7 +36,7 @@ def log(message: str) -> None:
         logging.error(f'Telegram Error: {response.text}')
 
 
-def create_bot(type: str, ticker: str, name: str, token: str):
+def create_bot(type: str, ticker: str, name: str, token: str) -> docker.Container:
     '''
     Create a new bot instance
     Returns a container instance of the bot
@@ -114,7 +114,7 @@ def stock_validate(id: str) -> tuple:
     return (symbol, symbol)
 
 
-def check_existing_bot(ticker: str):
+def check_existing_bot(ticker: str) -> str:
     '''
     Check if a bot already exists for the given ticker
     Returns the client id of the existing bot
