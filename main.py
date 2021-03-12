@@ -5,7 +5,7 @@ import docker
 from fastapi import FastAPI
 from requests import post
 
-from util import log, create_bot, crypto_validate, stock_validate, get_new_bot
+from util import log, notify_discord, create_bot, crypto_validate, stock_validate, get_new_bot
 
 
 app = FastAPI()
