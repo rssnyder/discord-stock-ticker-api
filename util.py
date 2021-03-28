@@ -37,6 +37,28 @@ def log(message: str) -> None:
         logging.error(f'Telegram Error: {response.text}')
 
 
+def notify_admin_docker(symbol: str, symbol_safe: str, name: str, client_id: str,  token: str):
+    '''
+    Send message to the admins with compose information
+    '''
+
+    # Compose information
+    message = f'  ticker-{symbol_safe}:\n'
+    message += 'image: ghcr.io/rssnyder/discord-stock-ticker:1.5.1\nrestart: unless-stopped\nlinks:\n  - redis\n'
+    message += f'container_name: ticker-{symbol_safe}\n'
+    message += 'environment:\n'
+    message += f'  - DISCORD_BOT_TOKEN={token}\n'
+    message += f'  - TICKER={symbol}\n'
+    message += f'  - STOCK_NAME={name}\n'
+    message += '  - FREQUENCY=30\n  - TZ=America/Chicago\n  - REDIS_URL=redis\n\n\n'
+
+    # Readme information
+    message += f'[![{symbol}](https://logo.clearbit.com/xxxxxxx.com)]'
+    message += f'(https://discord.com/api/oauth2/authorize?client_id={client_id}&permissions=0&scope=bot)\n'
+
+    log(message)
+
+
 def notify_discord(ticker: str, client_id: str) -> int:
     '''
     Post new bot to discord server
@@ -48,7 +70,7 @@ def notify_discord(ticker: str, client_id: str) -> int:
 
     discord_msg.add_embed(
         DiscordEmbed(
-            title=f'New Discord Ticker: {ticker.upper()}',
+            title=ticker.upper(),
             description=f'https://discord.com/api/oauth2/authorize?client_id={client_id}&permissions=0&scope=bot',
             color='3333ff'
         )
@@ -57,13 +79,13 @@ def notify_discord(ticker: str, client_id: str) -> int:
     discord_msg.execute().status_code
 
 
-def create_bot(type: str, ticker: str, name: str, token: str):
+def create_bot(type: str, ticker: str, name: str, client_id: str, token: str):
     '''
     Create a new bot instance
     Returns a container instance of the bot
     '''
 
-    docker_name = ticker.replace('^', '_')
+    docker_name = ticker.replace('^', '_').replace('=', '_')
 
     client = docker.from_env()
 
@@ -84,6 +106,8 @@ def create_bot(type: str, ticker: str, name: str, token: str):
             'redis': 'redis'
         }
     )
+
+    notify_admin_docker(ticker, docker_name, name, client_id, token)
 
     return instance
 

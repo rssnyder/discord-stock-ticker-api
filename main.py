@@ -2,7 +2,7 @@ import logging
 from os import getenv
 
 import docker
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from requests import post
 
 from util import log, notify_discord, create_bot, crypto_validate, stock_validate, get_new_bot
@@ -17,7 +17,9 @@ def read_root():
 
 
 @app.get('/crypto/{id}')
-def crypto(id: str):
+def crypto(id: str, response: Response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Cache-Control"] = "Private"
 
     # Validate crypto id with cg
     crypto_details = crypto_validate(id)
@@ -45,13 +47,12 @@ def crypto(id: str):
         'CRYPTO',
         crypto_details[1],
         crypto_details[0],
+        bot_details[0],
         bot_details[1]
     )
 
     if container:
 
-        # Notify admins of new bot instance
-        log(f'New crypto bot: {crypto_details[0]} {crypto_details[1]} {container.name} {container.status}')
         notify_discord(crypto_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
@@ -59,7 +60,9 @@ def crypto(id: str):
 
 
 @app.get('/stock/{id}')
-def stock(id: str):
+def stock(id: str, response: Response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Cache-Control"] = "Private"
 
     # Validate stock id with yahoo
     stock_details = stock_validate(id)
@@ -87,13 +90,12 @@ def stock(id: str):
         'STOCK',
         stock_details[1],
         stock_details[0],
+        bot_details[0],
         bot_details[1]
     )
 
     if container:
 
-        # Notify admins of new bot instance
-        log(f'New crypto bot: {stock_details[0]} {stock_details[1]} {container.name} {container.status}')
         notify_discord(stock_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
