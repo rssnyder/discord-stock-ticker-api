@@ -100,10 +100,6 @@ def create_bot(type: str, ticker: str, name: str, client_id: str, token: str):
             'FREQUENCY': 30,
             'TZ': 'America/Chicago',
             'REDIS_URL': 'cache'
-        },
-        network='jack_default',
-        links={
-            'redis': 'redis'
         }
     )
 
