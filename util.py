@@ -3,7 +3,7 @@ from os import getenv
 from sqlite3 import connect
 
 import docker
-from requests import get, post
+from requests import get
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 
