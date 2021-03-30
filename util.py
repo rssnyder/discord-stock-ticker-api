@@ -17,24 +17,24 @@ HEADERS = {
 
 def log(message: str) -> None:
     '''
-    Send message to telegram, or stdout
+    Send message to discord
     '''
-
-    data = {
-        'chat_id': getenv('TELEGRAM_CHAT_ID'),
-        'text': message,
-        'parse_mode': 'HTML'
-    }
-    
-    response = post(
-        f"https://api.telegram.org/bot{getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
-        json=data
-    )
 
     logging.info(message)
 
-    if response.status_code != 200:
-        logging.error(f'Telegram Error: {response.text}')
+    discord_msg = DiscordWebhook(
+        url=getenv('DISCORD_ADMIN_WEBHOOK')
+    )
+
+    discord_msg.add_embed(
+        DiscordEmbed(
+            title='API Log',
+            description=message,
+            color='ffb300'
+        )
+    )
+
+    return discord_msg.execute().status_code
 
 
 def notify_admin_docker(symbol: str, symbol_safe: str, name: str, client_id: str,  token: str):
@@ -44,13 +44,13 @@ def notify_admin_docker(symbol: str, symbol_safe: str, name: str, client_id: str
 
     # Compose information
     message = f'  ticker-{symbol_safe}:\n'
-    message += 'image: ghcr.io/rssnyder/discord-stock-ticker:1.5.1\nrestart: unless-stopped\nlinks:\n  - redis\n'
-    message += f'container_name: ticker-{symbol_safe}\n'
-    message += 'environment:\n'
-    message += f'  - DISCORD_BOT_TOKEN={token}\n'
-    message += f'  - TICKER={symbol}\n'
-    message += f'  - STOCK_NAME={name}\n'
-    message += '  - FREQUENCY=30\n  - TZ=America/Chicago\n  - REDIS_URL=redis\n\n\n'
+    message += '    image: ghcr.io/rssnyder/discord-stock-ticker:1.5.1\n    restart: unless-stopped\n    links:\n      - redis\n'
+    message += f'    container_name: ticker-{symbol_safe}\n'
+    message += '    environment:\n'
+    message += f'      - DISCORD_BOT_TOKEN={token}\n'
+    message += f'      - TICKER={symbol}\n'
+    message += f'      - STOCK_NAME={name}\n'
+    message += '      - FREQUENCY=30\n      - TZ=America/Chicago\n      - REDIS_URL=redis\n\n\n'
 
     # Readme information
     message += f'[![{symbol}](https://logo.clearbit.com/xxxxxxx.com)]'
@@ -76,7 +76,7 @@ def notify_discord(ticker: str, client_id: str) -> int:
         )
     )
 
-    discord_msg.execute().status_code
+    return discord_msg.execute().status_code
 
 
 def create_bot(type: str, ticker: str, name: str, client_id: str, token: str):

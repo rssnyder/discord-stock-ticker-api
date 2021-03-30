@@ -13,7 +13,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"goto": "website"}
+    return {"goto": "https://rssnyder.github.io/discord-stock-ticker"}
 
 
 @app.get('/crypto/{id}')
@@ -39,7 +39,10 @@ def crypto(id: str, response: Response):
     # Bot already existed
     if not bot_details[1]:
         log(f'existing bot requested: {id}')
-        return {'client_id': bot_details[0]}
+        return {
+            'client_id': bot_details[0],
+            'existing': True
+        }
 
     # Create new bot instance
     log(f'attempting to create new bot: {id}')
@@ -56,7 +59,7 @@ def crypto(id: str, response: Response):
         notify_discord(crypto_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
-        return {'error': 'oh no!'}
+        return {'error': 'having trouble starting new bot'}
 
 
 @app.get('/stock/{id}')
@@ -82,7 +85,10 @@ def stock(id: str, response: Response):
     # Bot already existed
     if not bot_details[1]:
         log(f'existing bot requested: {id}')
-        return {'client_id': bot_details[0]}
+        return {
+            'client_id': bot_details[0],
+            'existing': True
+        }
 
     # Create new bot instance
     log(f'attempting to create new bot: {id}')
@@ -99,4 +105,4 @@ def stock(id: str, response: Response):
         notify_discord(stock_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
-        return {'error': 'oh no!'}
+        return {'error': 'having trouble starting new bot'}
