@@ -55,8 +55,9 @@ def crypto(id: str, response: Response):
     )
 
     if container:
+        if getenv('DISCORD_WEBHOOK'):
+            notify_discord(crypto_details[0], bot_details[0])
 
-        notify_discord(crypto_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
         return {'error': 'having trouble starting new bot'}
@@ -101,8 +102,9 @@ def stock(id: str, response: Response):
     )
 
     if container:
+        if getenv('DISCORD_WEBHOOK'):
+            notify_discord(stock_details[0], bot_details[0])
 
-        notify_discord(stock_details[0], bot_details[0])
         return {'client_id': bot_details[0]}
     else:
         return {'error': 'having trouble starting new bot'}
