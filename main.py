@@ -22,7 +22,7 @@ def crypto(id: str, response: Response):
     response.headers["Cache-Control"] = "Private"
 
     # Validate crypto id with cg
-    crypto_details = crypto_validate(id)
+    crypto_details = crypto_validate(id.lower())
 
     if not crypto_details:
         log(f'unable to validate coin id: {id}')
@@ -68,7 +68,7 @@ def stock(id: str, response: Response):
     response.headers["Cache-Control"] = "Private"
 
     # Validate stock id with yahoo
-    stock_details = stock_validate(id)
+    stock_details = stock_validate(id.lower())
 
     if not stock_details:
         log(f'unable to validate stock id: {id}')
