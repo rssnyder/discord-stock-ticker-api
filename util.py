@@ -210,7 +210,11 @@ def get_new_bot(ticker: str) -> tuple:
     except TypeError:
         log('Unable to get new bot from db')
         return ()
-    
+   
+    if not new_bot:
+        log('Unable to get new bot from db')
+        return ()
+
     # Before we use the new bot, claim it
     claim_cur = db_client.cursor()
     claim_cur.execute(
