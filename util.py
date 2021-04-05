@@ -3,7 +3,7 @@ from os import getenv
 from sqlite3 import connect
 
 import docker
-from requests import get
+from requests import get, patch
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 
@@ -35,6 +35,29 @@ def log(message: str) -> None:
     )
 
     return discord_msg.execute().status_code
+
+
+def change_bot_username(token: str, username: str):
+    '''
+    Change the username of the bot
+    '''
+
+    resp = patch(
+        'https://discord.com/api/users/@me',
+        headers={
+            'Authorization': f'Bot {token}'
+        },
+        json={
+            'username': username.upper()
+        }
+    )
+
+    try:
+        resp.raise_for_status()
+    except:
+        return False
+    
+    return resp.json().get('username')
 
 
 def notify_admin_docker(symbol: str, symbol_safe: str, name: str, client_id: str,  token: str):
@@ -102,6 +125,9 @@ def create_bot(type: str, ticker: str, name: str, client_id: str, token: str):
             'REDIS_URL': 'cache'
         }
     )
+
+    if not change_bot_username(token, ticker):
+        log(f'unable to change the name for {name}')
 
     notify_admin_docker(ticker, docker_name, name, client_id, token)
 
