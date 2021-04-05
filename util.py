@@ -48,7 +48,7 @@ def change_bot_username(token: str, username: str):
             'Authorization': f'Bot {token}'
         },
         json={
-            'username': username
+            'username': username.upper()
         }
     )
 
